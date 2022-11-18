@@ -5,7 +5,7 @@ Repository for AE 6765 Project
 Below are descriptions of the files in here:
 
 
-main.m - the primary code that iterates equilibrium problem until convergence is reached.
+main.m - the primary code that iterates equilibrium problem until convergence is reached.\n
 readJANAF.m - reads JANAF thermochemical tables from tab-deliminated .txt files
 thermoChemEquilib.m - the workhorse code containing all the equations to solve equilibrium problem
 
