@@ -12,14 +12,15 @@
 
 %% EXECUTE
 
-function [T, Kf] = readJANAF(spec)
+function [T, h_hTref, dhf, Kf] = readJANAF(spec)
 
 fileStr = [spec,'.txt'];
 
 data = readmatrix(fileStr);
 
-T = data(:,1);
+T = data(:,1);          %[K]
+h_hTref = data(:,5);    %[kJ/mol]
+dhf = data(:,6);        %[kJ/mol]
 logKf = data(:,end);
-% Kf = exp(logKf);   %TODO: ensure log is ln() and not log10()
 Kf = 10.^(logKf);
 end
