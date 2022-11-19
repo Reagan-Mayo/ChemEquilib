@@ -42,10 +42,12 @@ eqn5 = log(Kp.Ne) == log(1);
 eqn6 = 2.*phi == (2.*XH2 + 2.*XH2O + XOH + XH)./(2.*XO2 + XH2O + XOH + XO + XNO);
 eqn7 = 3.76 == (2.*XN2 + XNO)./(2.*XO2 + XH2O + XOH + XO + XNO);
 eqn9 = 1 == XH2 + XO2 + XN2 + XH2O + XOH + XO + XH + XNO + XNe;
+
 if XNe ~= 0
     eqn8 = XNe == XNe ./ (2.*XO2 + XH2O + XOH + XO + XNO);
 else
     eqn8 = Kp.O == XO ./ (XO2.*p2).^(1/2);
+%     eqn8 = Kp.O == abs(XO) ./ (abs(XO2).*p2).^(1/2);
 end
 
 S = vpasolve([eqn1,eqn2,eqn3,eqn4,eqn6,eqn7,eqn8,eqn9],[XH2O,XH2,XO2,XOH,XNO,XN2,XH,XO],[0.5;0.5;0.5;0.5;0.5;0.5;0.5;0.5]);

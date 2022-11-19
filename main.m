@@ -8,7 +8,7 @@ clear; clc; close all;
 
 % Species Information
 spec = {'H2','O2','N2','H2O','OH','O','H','NO','Ne'}; %species under consideration
-X.Ne = 0.01;    %Neon mole fraction = 0
+X.Ne = 0.0;    %Neon mole fraction = 0
 
 % Inlet Conditions
 f.p = 20;   %fuel pressure [atm]
@@ -30,7 +30,8 @@ Tguess = 2000;  %[K]
 
 %% EXECUTE
 
-for j = 1:length(phi)
+% for j = 1:length(phi)
+for j = 1
     % Collect JANAF thermochemical data
     for i = 1:length(spec)
         [T.(spec{i}), h_hTref.(spec{i}), dhf.(spec{i}), Kp.(spec{i})] = readJANAF(spec{i});
@@ -41,11 +42,11 @@ for j = 1:length(phi)
     Tguess1 = inf;
     err = inf; err1 = inf;
     cr1 = cr;
-    while err >= eps    % While convergence not met
+    while abs(Tguess - Tguess1) >= eps    % While convergence not met
         [X,err] = thermoChemEquilib(f,o,Tguess,f.p,T,h_hTref,dhf,Kp,spec,phi(j),X.Ne);
         
         if err*err1 < 0     %if error passes 0, change direction of temperature steps
-            cr1 = -0.1*cr1;
+            cr1 = -0.1*cr1;   %Time = 4.713 sec
         end
         
         % Prepare for next loop
