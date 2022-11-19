@@ -5,10 +5,9 @@ clear; clc; close all;
 % Main code to collect JANAF data, iterate until converge at a chemical
 % equilibrium, and output figures.
 %% INPUTS
-
 % Species Information
 spec = {'H2','O2','N2','H2O','OH','O','H','NO','Ne'}; %species under consideration
-X.Ne = 0.0;    %Neon mole fraction = 0
+X.Ne = 0.23;    %Neon mole fraction = 0
 
 % Inlet Conditions
 f.p = 20;   %fuel pressure [atm]
@@ -20,18 +19,18 @@ o.T = 500;  %oxidizer temp [K]
 phi = 0.7:0.1:1.3;
 
 % Convergence Criteria
-eps = 1e-6;
+eps = 5;
 
 % Convergence Rate
 cr = 0.2;
 
 % Adiabatic Flame Temperature Initial Guess
-Tguess = 2000;  %[K]
+Tguess = 1500;  %[K]
 
 %% EXECUTE
 
 % for j = 1:length(phi)
-for j = 1
+for j = 4
     % Collect JANAF thermochemical data
     for i = 1:length(spec)
         [T.(spec{i}), h_hTref.(spec{i}), dhf.(spec{i}), Kp.(spec{i})] = readJANAF(spec{i});
@@ -42,6 +41,7 @@ for j = 1
     Tguess1 = inf;
     err = inf; err1 = inf;
     cr1 = cr;
+    count = 1;
     while abs(Tguess - Tguess1) >= eps    % While convergence not met
         [X,err] = thermoChemEquilib(f,o,Tguess,f.p,T,h_hTref,dhf,Kp,spec,phi(j),X.Ne);
         
@@ -53,6 +53,7 @@ for j = 1
         err1 = err;
         Tguess1 = Tguess;
         Tguess = Tguess*(1+cr1);
+        count = count+1;
     end
     
     % Outlet Conditions
@@ -63,7 +64,8 @@ for j = 1
     T_save(j) = Te; %adiabatic flame temp [K]
     X_save(j) = X;  %Mole fractions
 end
-
+Te
+X
 % Plot
 
 

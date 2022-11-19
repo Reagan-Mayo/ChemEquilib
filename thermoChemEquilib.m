@@ -29,28 +29,47 @@ end
 Kp.Ne = 1;  %inert
 
 % Formation Reaction Equations
+format long
+%% New Way
+% X = ['H2','O2','N2','H2O','OH','O','H','NO'];
+% X0 = [1 1 1 1 1 1 1 1];
+% for i = 1:length(spec)-1
+%     c(i) = Kp.(spec{i});
+% end
+% c(9:11) = [phi p2 XNe];
+% fun = @(X)chemCompSolver(X,c)
+% 
+% options = optimoptions(@fsolve,'MaxFunctionEvaluations',2e4)
+% S = fsolve(fun,X0,options)
 
+
+
+%% Old Way
 syms XH2O XH2 XO2 XOH XNO XN2 XH XO
 
-eqn1 = log(Kp.H2O) == log(XH2O./(XH2.*(XO2.*p2).^(1/2)));
-eqn2 = log(Kp.OH) == log(XOH ./ (XH2.*XO2).^(1/2));
-eqn3 = log(Kp.NO) == log(XNO ./ (XN2.*XO2).^(1/2));
-eqn4 = log(Kp.H) == log(XH ./ (XH2.*p2).^(1/2));
-eqn5 = log(Kp.Ne) == log(1);
+eqn1 = log10(Kp.H2O) == log10(XH2O./(XH2.*(XO2.*p2).^(1/2)));
+eqn2 = log10(Kp.OH) == log10(XOH ./ (XH2.*XO2).^(1/2));
+eqn3 = log10(Kp.NO) == log10(XNO ./ (XN2.*XO2).^(1/2));
+eqn4 = log10(Kp.H) == log10(XH.*p2.^0.5 ./ (XH2).^(1/2));
+eqn5 = log10(Kp.Ne) == log10(1);
 
 % Atom Conservation Equations
 eqn6 = 2.*phi == (2.*XH2 + 2.*XH2O + XOH + XH)./(2.*XO2 + XH2O + XOH + XO + XNO);
 eqn7 = 3.76 == (2.*XN2 + XNO)./(2.*XO2 + XH2O + XOH + XO + XNO);
 eqn9 = 1 == XH2 + XO2 + XN2 + XH2O + XOH + XO + XH + XNO + XNe;
+eqn8 = log10(Kp.O) == log10(XO.*p2.^0.5 ./ (XO2).^(1/2));
 
-if XNe ~= 0
-    eqn8 = XNe == XNe ./ (2.*XO2 + XH2O + XOH + XO + XNO);
-else
-    eqn8 = Kp.O == XO ./ (XO2.*p2).^(1/2);
-%     eqn8 = Kp.O == abs(XO) ./ (abs(XO2).*p2).^(1/2);
-end
+
+
+assume(XH2O,{'real','positive'}); assume(XH2,{'real','positive'}); assume(XO2,{'real','positive'}); assume(XOH,{'real','positive'});
+assume(XNO,{'real','positive'}); assume(XN2,{'real','positive'}); assume(XH,{'real','positive'}); assume(XO,{'real','positive'});
 
 S = vpasolve([eqn1,eqn2,eqn3,eqn4,eqn6,eqn7,eqn8,eqn9],[XH2O,XH2,XO2,XOH,XNO,XN2,XH,XO],[0.5;0.5;0.5;0.5;0.5;0.5;0.5;0.5]);
+if isempty(S.XH2)
+    S = vpasolve([eqn1,eqn2,eqn3,eqn4,eqn6,eqn7,eqn8,eqn9],[XH2O,XH2,XO2,XOH,XNO,XN2,XH,XO]);
+end
+%% End Old Way
+
 
 % Store Mole Fraction Ratio Solutions
 fn = fieldnames(S);
@@ -82,8 +101,9 @@ for i = 1:length(spec_f)    %Fuel
 end
 
 % Solve for Inequality
+ntot = 3.76/(2*X.N2 + X.NO);
 LHS = phi.*rxnt.H2 + 0.5.*(rxnt.O2 + 3.76.*rxnt.N2) + X.Ne .* rxnt.N2;
-RHS = prod.H2 + prod.O2 + prod.N2 + prod.H2O + prod.OH + prod.O + prod.H + prod.NO + prod.Ne;
+RHS = ntot*prod.H2 + ntot*prod.O2 + ntot*prod.N2 + ntot*prod.H2O + ntot*prod.OH + ntot*prod.O + ntot*prod.H + ntot*prod.NO + ntot*prod.Ne;
 TadEqnIneq = LHS - RHS;
 
 

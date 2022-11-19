@@ -22,5 +22,5 @@ T = data(:,1);          %[K]
 h_hTref = data(:,5);    %[kJ/mol]
 dhf = data(:,6);        %[kJ/mol]
 logKf = data(:,end);
-Kf = 10.^(logKf);
+Kf = 10.^(logKf);    %TODO: see if log is ln or log10
 end
