@@ -102,7 +102,7 @@ end
 
 % Solve for Inequality
 ntot = 3.76/(2*X.N2 + X.NO);
-LHS = phi.*rxnt.H2 + 0.5.*(rxnt.O2 + 3.76.*rxnt.N2) + X.Ne .* rxnt.N2;
+LHS = phi.*rxnt.H2 + 0.5.*(rxnt.O2 + 3.76.*rxnt.N2) + X.Ne .* rxnt.N2 .* ((phi+0.5+0.5*3.76)./ntot);
 RHS = ntot*prod.H2 + ntot*prod.O2 + ntot*prod.N2 + ntot*prod.H2O + ntot*prod.OH + ntot*prod.O + ntot*prod.H + ntot*prod.NO + ntot*prod.Ne;
 TadEqnIneq = LHS - RHS;
 

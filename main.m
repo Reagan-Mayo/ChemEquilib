@@ -16,7 +16,8 @@ o.p = f.p;   %oxidizer pressure [atm]
 o.T = 500;  %oxidizer temp [K]
 
 % Combustion Properties
-phi = 0.7:0.1:1.3;
+% phi = 0.7:0.1:1.3;
+phi = 1;
 
 % Convergence Criteria
 eps = 5;
@@ -29,8 +30,7 @@ Tguess = 1500;  %[K]
 
 %% EXECUTE
 
-% for j = 1:length(phi)
-for j = 4
+for j = 1:length(phi)
     % Collect JANAF thermochemical data
     for i = 1:length(spec)
         [T.(spec{i}), h_hTref.(spec{i}), dhf.(spec{i}), Kp.(spec{i})] = readJANAF(spec{i});
